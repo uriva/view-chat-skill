@@ -5,9 +5,18 @@ description: Log and retrieve chatbot conversations via the View Chat API. Use w
 
 # View Chat -- Conversation Monitoring API
 
-View Chat lets AI agents log chatbot conversations in real-time and retrieve them later. Conversations are organized into groups for multi-tenant or multi-project setups. A web UI at `https://conversation-viewer.onrender.com` provides a dashboard for browsing logged conversations.
+View Chat lets AI agents log chatbot conversations in real-time and retrieve
+them later. Conversations are organized into groups for multi-tenant or
+multi-project setups. A web UI at `https://conversation-viewer.onrender.com`
+provides a dashboard for browsing logged conversations.
 
 Base URL: `https://api.view-chat.com`
+
+## Authentication
+
+This skill requires the `VIEW_CHAT_TOKEN` environment variable to be set.
+Read it with `process.env.VIEW_CHAT_TOKEN` (Node/Deno) or `$VIEW_CHAT_TOKEN`
+(shell). If the variable is not set, stop and ask the user to provide it.
 
 ## Protocol
 
@@ -21,8 +30,8 @@ All requests are `POST` to the base URL with a JSON body:
 }
 ```
 
-On success, responses include `{ "ok": true, ... }`.
-On error, the API returns HTTP 400 with `{ "error": "message" }`.
+On success, responses include `{ "ok": true, ... }`. On error, the API returns
+HTTP 400 with `{ "error": "message" }`.
 
 ## Quick start
 
@@ -78,16 +87,17 @@ curl -X POST https://api.view-chat.com \
 
 ### log
 
-Log a message to a conversation. The conversation and groups are created automatically if they don't exist.
+Log a message to a conversation. The conversation and groups are created
+automatically if they don't exist.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `event.from` | string | yes | Who sent the message |
-| `event.text` | string | yes | Message content |
-| `event.time` | number | yes | Unix timestamp in milliseconds |
-| `conversation` | string | yes | Conversation identifier (created automatically if new) |
-| `groups` | string[] | no | Group names to assign (created automatically). Mutually exclusive with `groupIds`. |
-| `groupIds` | string[] | no | Group IDs to assign (must already exist). Mutually exclusive with `groups`. |
+| Field          | Type     | Required | Description                                                                        |
+| -------------- | -------- | -------- | ---------------------------------------------------------------------------------- |
+| `event.from`   | string   | yes      | Who sent the message                                                               |
+| `event.text`   | string   | yes      | Message content                                                                    |
+| `event.time`   | number   | yes      | Unix timestamp in milliseconds                                                     |
+| `conversation` | string   | yes      | Conversation identifier (created automatically if new)                             |
+| `groups`       | string[] | no       | Group names to assign (created automatically). Mutually exclusive with `groupIds`. |
+| `groupIds`     | string[] | no       | Group IDs to assign (must already exist). Mutually exclusive with `groups`.        |
 
 Response: `{"ok": true}`
 
@@ -109,15 +119,16 @@ await fetch("https://api.view-chat.com", {
 
 ### getConversations
 
-List conversations for the authenticated account, with optional filtering and pagination.
+List conversations for the authenticated account, with optional filtering and
+pagination.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `groupId` | string | no | Filter by group ID |
-| `limit` | number | no | Max conversations to return (default: 25, max: 100) |
-| `offset` | number | no | Number of conversations to skip (default: 0) |
-| `since` | number | no | Only conversations with `lastMessageTime >= since` (Unix ms) |
-| `until` | number | no | Only conversations with `lastMessageTime <= until` (Unix ms) |
+| Field     | Type   | Required | Description                                                  |
+| --------- | ------ | -------- | ------------------------------------------------------------ |
+| `groupId` | string | no       | Filter by group ID                                           |
+| `limit`   | number | no       | Max conversations to return (default: 25, max: 100)          |
+| `offset`  | number | no       | Number of conversations to skip (default: 0)                 |
+| `since`   | number | no       | Only conversations with `lastMessageTime >= since` (Unix ms) |
+| `until`   | number | no       | Only conversations with `lastMessageTime <= until` (Unix ms) |
 
 Response:
 
@@ -139,11 +150,11 @@ Response:
 
 Get messages for a specific conversation, with pagination.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `conversationId` | string | yes | Conversation ID |
-| `limit` | number | no | Max messages to return (default: 100, max: 200) |
-| `offset` | number | no | Number of messages to skip (default: 0) |
+| Field            | Type   | Required | Description                                     |
+| ---------------- | ------ | -------- | ----------------------------------------------- |
+| `conversationId` | string | yes      | Conversation ID                                 |
+| `limit`          | number | no       | Max messages to return (default: 100, max: 200) |
+| `offset`         | number | no       | Number of messages to skip (default: 0)         |
 
 Response:
 
@@ -167,9 +178,9 @@ Messages are ordered by time descending (newest first).
 
 Create a named group for organizing conversations.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | yes | Name for the new group |
+| Field  | Type   | Required | Description            |
+| ------ | ------ | -------- | ---------------------- |
+| `name` | string | yes      | Name for the new group |
 
 Response: `{"ok": true, "groupId": "..."}`
 
@@ -177,10 +188,10 @@ Response: `{"ok": true, "groupId": "..."}`
 
 Grant a user read access to a group's conversations via the web UI.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `email` | string | yes | Email address of the viewer |
-| `groupId` | string | yes | ID of the group to grant access to |
+| Field     | Type   | Required | Description                        |
+| --------- | ------ | -------- | ---------------------------------- |
+| `email`   | string | yes      | Email address of the viewer        |
+| `groupId` | string | yes      | ID of the group to grant access to |
 
 Response: `{"ok": true}`
 
@@ -324,18 +335,24 @@ await fetch("https://api.view-chat.com", {
 
 ## Key concepts
 
-- **Conversation**: A named thread of messages. Created automatically on first `log` call with that name. The `name` you pass as `conversation` becomes the conversation's display name.
-- **Group**: An organizational container for conversations. Use groups to separate conversations by project, bot, environment, etc. A conversation can belong to multiple groups.
-- **Viewer**: A user (by email) granted read access to a group's conversations through the web dashboard.
-- **Token**: API authentication credential. Tokens are managed through the web UI at `https://conversation-viewer.onrender.com`, not through the API.
+- **Conversation**: A named thread of messages. Created automatically on first
+  `log` call with that name. The `name` you pass as `conversation` becomes the
+  conversation's display name.
+- **Group**: An organizational container for conversations. Use groups to
+  separate conversations by project, bot, environment, etc. A conversation can
+  belong to multiple groups.
+- **Viewer**: A user (by email) granted read access to a group's conversations
+  through the web dashboard.
+- **Token**: API authentication credential. Tokens are managed through the web
+  UI at `https://conversation-viewer.onrender.com`, not through the API.
 
 ## Error handling
 
 The API returns HTTP 400 with `{"error": "..."}` for all errors. Common errors:
 
-| Error | Cause |
-|-------|-------|
-| Invalid token | Token is malformed, revoked, or doesn't exist |
-| Missing required fields | A required payload field is missing |
-| Invalid input format | Payload doesn't match the expected schema |
-| Conversation not found | `conversationId` in `getMessages` doesn't exist |
+| Error                   | Cause                                           |
+| ----------------------- | ----------------------------------------------- |
+| Invalid token           | Token is malformed, revoked, or doesn't exist   |
+| Missing required fields | A required payload field is missing             |
+| Invalid input format    | Payload doesn't match the expected schema       |
+| Conversation not found  | `conversationId` in `getMessages` doesn't exist |
