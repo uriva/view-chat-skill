@@ -14,9 +14,9 @@ Base URL: `https://api.view-chat.com`
 
 ## Authentication
 
-This skill requires the `VIEW_CHAT_TOKEN` environment variable to be set.
-Read it with `process.env.VIEW_CHAT_TOKEN` (Node/Deno) or `$VIEW_CHAT_TOKEN`
-(shell). If the variable is not set, stop and ask the user to provide it.
+This skill requires the `VIEW_CHAT_TOKEN` environment variable to be set. Read
+it with `process.env.VIEW_CHAT_TOKEN` (Node/Deno) or `$VIEW_CHAT_TOKEN` (shell).
+If the variable is not set, stop and ask the user to provide it.
 
 ## Protocol
 
