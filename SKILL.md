@@ -90,16 +90,22 @@ curl -X POST https://api.view-chat.com \
 Log a message to a conversation. The conversation and groups are created
 automatically if they don't exist.
 
-| Field          | Type     | Required | Description                                                                        |
-| -------------- | -------- | -------- | ---------------------------------------------------------------------------------- |
-| `event.from`   | string   | yes      | Who sent the message                                                               |
-| `event.text`   | string   | yes      | Message content                                                                    |
-| `event.time`   | number   | yes      | Unix timestamp in milliseconds                                                     |
-| `conversation` | string   | yes      | Conversation identifier (created automatically if new)                             |
-| `groups`       | string[] | no       | Group names to assign (created automatically). Mutually exclusive with `groupIds`. |
-| `groupIds`     | string[] | no       | Group IDs to assign (must already exist). Mutually exclusive with `groups`.        |
+| Field             | Type     | Required | Description                                                                        |
+| ----------------- | -------- | -------- | ---------------------------------------------------------------------------------- |
+| `event.from`      | string   | yes      | Who sent the message                                                               |
+| `event.text`      | string   | yes      | Message content                                                                    |
+| `event.time`      | number   | yes      | Unix timestamp in milliseconds                                                     |
+| `event.foreignId` | string   | no       | Client-provided unique message ID for deduplication. If a message with this ID already exists in the conversation, the log is silently ignored. |
+| `conversation`    | string   | yes      | Conversation identifier (created automatically if new)                             |
+| `groups`          | string[] | no       | Group names to assign (created automatically). Mutually exclusive with `groupIds`. |
+| `groupIds`        | string[] | no       | Group IDs to assign (must already exist). Mutually exclusive with `groups`.        |
 
 Response: `{"ok": true}`
+
+> **Idempotent logging**: If you pass `event.foreignId`, View Chat deduplicates
+> by that ID within the conversation. Subsequent logs with the same
+> `conversation` + `foreignId` are silently ignored. This lets you retry failed
+> log calls without creating duplicate messages.
 
 ```typescript
 await fetch("https://api.view-chat.com", {
